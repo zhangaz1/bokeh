@@ -178,16 +178,13 @@ export class Plot extends LayoutDOM {
     })
   }
 
-  // TODO: change this when we drop ES5 compatibility (https://github.com/microsoft/TypeScript/issues/338)
   get width(): number | null {
-    // const width = super.width
-    const width = this.properties.width.get_value()
+    const width = super.width
     return width != null ? width : this.plot_width
   }
 
   get height(): number | null {
-    // const height = super.height
-    const height = this.properties.height.get_value()
+    const height = super.height
     return height != null ? height : this.plot_height
   }
 
