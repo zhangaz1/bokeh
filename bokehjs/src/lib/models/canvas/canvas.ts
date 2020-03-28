@@ -138,16 +138,11 @@ export class CanvasView extends DOMView {
   save(name: string): void {
     if (this.canvas_el instanceof HTMLCanvasElement) {
       const canvas = this.canvas_el
-      if (canvas.msToBlob != null) {
-        const blob = canvas.msToBlob()
-        window.navigator.msSaveBlob(blob, name)
-      } else {
-        const link = document.createElement("a")
-        link.href = canvas.toDataURL("image/png")
-        link.download = name + ".png"
-        link.target = "_blank"
-        link.dispatchEvent(new MouseEvent("click"))
-      }
+      const link = document.createElement("a")
+      link.href = canvas.toDataURL("image/png")
+      link.download = name + ".png"
+      link.target = "_blank"
+      link.dispatchEvent(new MouseEvent("click"))
     } else {
       const ctx = this._ctx as SVGRenderingContext2D
       const svg = ctx.getSerializedSvg(true)
