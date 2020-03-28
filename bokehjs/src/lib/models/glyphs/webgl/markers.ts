@@ -6,7 +6,6 @@ import {MarkerView} from "../../markers/marker"
 import {CircleView} from "../circle"
 import {Class} from "core/class"
 import {map} from "core/util/arrayable"
-import {logger} from "core/logging"
 
 // Base class for markers. All markers share the same GLSL, except for one
 // function that defines the marker geometry.
@@ -102,14 +101,6 @@ export abstract class MarkerGLGlyph extends BaseGLGlyph {
     else if (indices.length === nvertices)
       this.prog.draw(this.gl.POINTS, [0, nvertices])
     else if (nvertices < 65535) {
-      // On IE the marker size is reduced to 1 px when using an index buffer
-      // A MS Edge dev on Twitter said on 24-04-2014: "gl_PointSize > 1.0 works
-      // in DrawArrays; gl_PointSize > 1.0 in DrawElements is coming soon in the
-      // next renderer update.
-      const ua = window.navigator.userAgent
-      if ((ua.indexOf("MSIE ") + ua.indexOf("Trident/") + ua.indexOf("Edge/")) > 0) {
-        logger.warn('WebGL warning: IE is known to produce 1px sprites whith selections.')
-      }
       this.index_buffer.set_size(indices.length*2)
       this.index_buffer.set_data(0, new Uint16Array(indices))
       this.prog.draw(this.gl.POINTS, this.index_buffer)
