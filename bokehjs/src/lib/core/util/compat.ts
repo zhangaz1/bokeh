@@ -1,8 +1,3 @@
-export const is_ie = (() => {
-  const ua = typeof navigator !== "undefined" ? navigator.userAgent : ""
-  return ua.indexOf('MSIE') >= 0 || ua.indexOf('Trident') > 0 || ua.indexOf('Edge') > 0
-})()
-
 export const is_mobile = (() => {
   return typeof window !== "undefined" && ("ontouchstart" in window || navigator.maxTouchPoints > 0)
 })()
