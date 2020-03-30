@@ -152,17 +152,11 @@ export function offset(element: HTMLElement) {
   }
 }
 
-export function matches(el: HTMLElement, selector: string): boolean {
-  const p: any = Element.prototype
-  const f = p.matches || p.webkitMatchesSelector || p.mozMatchesSelector || p.msMatchesSelector
-  return f.call(el, selector)
-}
-
 export function parent(el: HTMLElement, selector: string): HTMLElement | null {
   let node: HTMLElement | null = el
 
   while (node = node.parentElement) {
-    if (matches(node, selector))
+    if (node.matches(selector))
       return node
   }
 
