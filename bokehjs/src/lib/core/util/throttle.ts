@@ -1,13 +1,4 @@
-function _delay_animation(callback: FrameRequestCallback): number {
-  callback(Date.now()) // XXX: performance.now()
-  return -1
-}
-
-const delay_animation =
-  (typeof window !== 'undefined' ?  window        .requestAnimationFrame       : undefined) ||
-  (typeof window !== 'undefined' ?  window        .webkitRequestAnimationFrame : undefined) ||
-  (typeof window !== 'undefined' ? (window as any).mozRequestAnimationFrame    : undefined) ||
-  (typeof window !== 'undefined' ? (window as any).msRequestAnimationFrame     : undefined) || _delay_animation
+const delay_animation = requestAnimationFrame
 
 // Returns a function, that, when invoked, will only be triggered at
 // most once during a given window of time.
