@@ -7,11 +7,9 @@ export function delay(func: () => void, wait: number): number {
   return setTimeout(func, wait)
 }
 
-const _defer = typeof requestAnimationFrame === "function" ? requestAnimationFrame : setImmediate
-
 export function defer<T>(func: () => T): Promise<T> {
   return new Promise((resolve) => {
-    _defer(() => resolve(func()))
+    delay(() => resolve(func()), 0) // TODO: use defer() from PR #9624
   })
 }
 
