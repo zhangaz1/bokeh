@@ -2,9 +2,9 @@ import Hammer, {Input} from "hammerjs"
 type HammerEvent = typeof Input
 
 import {Signal} from "./signaling"
-import {DOMView} from "./dom_view"
 import {logger} from "./logging"
 import {offset, Keys} from "./dom"
+import * as events from "./bokeh_events"
 import {getDeltaY} from "./util/wheel"
 import {reversed} from "./util/array"
 import {isEmpty} from "./util/object"
@@ -15,6 +15,7 @@ import {Toolbar} from "../models/tools/toolbar"
 import {ToolView} from "../models/tools/tool"
 import * as events from "./bokeh_events"
 import {ContextMenu} from "./util/menus"
+import {RendererView} from "../models/renderers/renderer"
 
 function is_touch(event: unknown): event is TouchEvent {
   return typeof TouchEvent !== "undefined" && event instanceof TouchEvent
@@ -281,7 +282,7 @@ export class UIEvents implements EventListenerObject {
     }
   }
 
-  protected _hit_test_renderers(sx: number, sy: number): DOMView | null {
+  protected _hit_test_renderers(sx: number, sy: number): RendererView | null {
     const views = this.plot_view.get_renderer_views()
 
     for (const view of reversed(views)) {
