@@ -134,8 +134,6 @@ export class PlotView extends LayoutDOMView {
 
   protected _is_paused?: number
 
-  protected lod_started: boolean
-
   protected _initial_state_info: StateInfo
 
   protected state: {
@@ -231,7 +229,6 @@ export class PlotView extends LayoutDOMView {
 
     this.state_changed = new Signal0(this, "state_changed")
 
-    this.lod_started = false
     this.visuals = new Visuals(this.model) as any // XXX
 
     this._initial_state_info = {
@@ -921,19 +918,17 @@ export class PlotView extends LayoutDOMView {
 
     logger.trace(`PlotView.paint() for ${this.model.id}`)
 
-    const {document} = this.model
-    if (document != null) {
-      const interactive_duration = document.interactive_duration()
-      if (interactive_duration >= 0 && interactive_duration < this.model.lod_interval) {
-        setTimeout(() => {
-          if (document.interactive_duration() > this.model.lod_timeout) {
-            document.interactive_stop(this.model)
-          }
-          this.request_paint()
-        }, this.model.lod_timeout)
-      } else
-        document.interactive_stop(this.model)
-    }
+    const {canvas_view} = this
+    const interactive_duration = canvas_view.interactive_duration()
+    if (interactive_duration >= 0 && interactive_duration < this.model.lod_interval) {
+      setTimeout(() => {
+        if (canvas_view.interactive_duration() > this.model.lod_timeout) {
+          canvas_view.interactive_stop(this.model)
+        }
+        this.request_paint()
+      }, this.model.lod_timeout)
+    } else
+      canvas_view.interactive_stop(this.model)
 
     for (const id in this.renderer_views) {
       const v = this.renderer_views[id]
