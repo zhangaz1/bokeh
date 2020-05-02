@@ -41,7 +41,7 @@ export class EventManager {
     for (const id of this.subscribed_models) {
       if (event.origin != null && event.origin.id !== id)
         continue
-      const model = this.document._all_models[id]
+      const odel = this.document._all_models[id]
       if (model != null && model instanceof Model)
         model._process_event(event)
     }
