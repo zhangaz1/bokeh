@@ -13,6 +13,7 @@ import {throttle} from "core/util/throttle"
 import {Box} from "core/types"
 import {LayoutDOM, LayoutDOMView} from "../layouts/layout_dom"
 import {LayoutItem} from "core/layout/layoutable"
+import {build_views, remove_views} from "core/build_views"
 
 import type {Plot} from "../plots/plot"
 export type InteractiveRenderer = Plot
@@ -177,8 +178,11 @@ export class CanvasView extends LayoutDOMView {
 
   ui_event_bus: UIEventBus
 
+  renderer_views: {[key: string]: RendererView}
+
   initialize(): void {
     super.initialize()
+    this.renderer_views = {}
 
     const {output_backend, hidpi} = this.model
     if (output_backend == "webgl") {
@@ -195,7 +199,13 @@ export class CanvasView extends LayoutDOMView {
     this.throttled_paint = throttle(() => this.repaint(), 1000/60)
   }
 
+  async lazy_initialize(): Promise<void> {
+    await super.lazy_initialize()
+    await build_views(this.renderer_views, this.model.renderers, {parent: this})
+  }
+
   remove(): void {
+    remove_views(this.renderer_views)
     this.ui_event_bus.destroy()
     super.remove()
   }
@@ -393,6 +403,14 @@ export class CanvasView extends LayoutDOMView {
         primary.clear()
 
       const {ctx} = primary
+
+      for (const renderer of this.model.renderers) {
+        if (renderer.level == "overlay")
+          continue
+        const renderer_view = this.renderer_views[renderer.id]
+        renderer_view.paint()
+      }
+
       for (const plot_view of this.plot_views) {
         if (!(plot_view.dirty || has_dirty(plot_view)))
           continue
@@ -414,6 +432,14 @@ export class CanvasView extends LayoutDOMView {
         overlays.clear()
 
       const {ctx} = overlays
+
+      for (const renderer of this.model.renderers) {
+        if (renderer.level != "overlay")
+          continue
+        const renderer_view = this.renderer_views[renderer.id]
+        renderer_view.paint()
+      }
+
       for (const plot_view of this.plot_views) {
         if (!(plot_view.dirty || has_dirty(plot_view)))
           continue
@@ -531,6 +557,7 @@ export class CanvasView extends LayoutDOMView {
     super.after_layout()
     const {width, height} = this.layout.bbox
     this.resize(width, height)
+    this.request_paint()
   }
 }
 
